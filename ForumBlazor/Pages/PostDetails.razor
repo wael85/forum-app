@@ -1,0 +1,87 @@
+@page "/PostDetails/{id:int}"
+@using Domain.Models
+@using ForumHttpClient.ClientInterfaces
+@inject IPostService postService;
+@inject IUserService userService;
+@inject NavigationManager nav;
+<div class="container">
+    @if (!String.IsNullOrEmpty(msg))
+    {
+        <h4>@msg</h4>
+    }
+    else if(post == null)
+    {
+        <h3>Loding.....</h3>
+    }
+    else
+    {
+        <div class="row mt-5">
+            <div class="col"></div>
+            <div class="col-md">
+                <h3>
+                    @post.Title
+                </h3>
+            </div>
+            <div class="col"></div>
+        </div>
+        <div class="row mt-5">
+            <div class="col"></div>
+            <div class="col-md">
+                <p>
+                    @post.Content
+                </p>
+            </div>
+            <div class="col"></div>
+        </div>
+        <div class="row mt-5">
+            <div class="col"></div>
+            <div class="col-md">
+                <h4>
+                    Author: @user.UserName
+                </h4>
+            </div>
+            <div class="col"></div>
+        </div>
+        <div class="row mt-5">
+            <div class="col"></div>
+            <div class="col-md">
+                <button class="btn btn-outline-danger" @onclick="DeletePost">Delete</button>
+            </div>
+            <div class="col"></div>
+        </div>
+
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    string msg = "";
+
+    Post? post;
+    User? user;
+
+    protected  override async Task OnInitializedAsync()
+    {
+        msg = "";
+        try
+        {
+            post = await postService.GetByIdAsync(Id);
+            user = await userService.GetUserByIdAsync(post.UserId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private void DeletePost()
+    {
+        postService.DeleteAsync(post!.Id);
+        nav.NavigateTo("Posts");
+        
+    }
+
+}

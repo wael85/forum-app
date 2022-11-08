@@ -1,0 +1,69 @@
+@page "/Login"
+@using Domain.Models
+@using System.Security.Claims
+@using ForumHttpClient.Services
+@inject IAuthService authService
+@inject NavigationManager navMgr
+<AuthorizeView>
+    <NotAuthorized>
+        <div class="form-signin bg-light">
+            
+                <img class="mb-4" src="https://www.dropbox.com/s/zgbbayj1iqd9fjf/CF_Mark.jpg?raw=1" alt="" width="72">
+                <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+        
+                <div class="form-floating">
+                    <input type="text" class="form-control" @bind="userName" id="floatingInput">
+                    <label for="floatingInput">User name</label>
+                </div>
+                <div class="form-floating">
+                    <input type="password" @bind="password" class="form-control" id="floatingPassword" placeholder="Password">
+                    <label for="floatingPassword">Password</label>
+                </div>
+        
+                @if (!string.IsNullOrEmpty(errorLabel))
+                {
+                    <div class="field">
+                        <label style="color: red">
+                            @errorLabel
+                        </label>
+                    </div>
+                }
+                
+                <button class="w-100 btn btn-lg btn-dark" type="submit" @onclick="LoginAsync">Sign in</button>
+                <p class="mt-5 mb-3 text-muted">&copy; 2017–2021</p>
+        </div>
+    </NotAuthorized>
+        <Authorized>
+            <div class="card">
+                <h3>Hello, @context.User.Identity.Name</h3>
+                <ul>
+                    @foreach (Claim claim in context.User.Claims)
+                    {
+                        <li>@claim.ValueType , @claim.Type , @claim.Value</li>
+                    }
+                </ul>
+                
+            </div>
+        </Authorized>
+</AuthorizeView>
+@code {
+    private string userName;
+    private string password;
+    private string errorLabel;
+
+    private async Task LoginAsync()
+    {
+        errorLabel = "";
+        try
+        {
+            Console.WriteLine(userName+password);
+            await authService.LoginAsync(userName, password);
+            navMgr.NavigateTo("/");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            errorLabel = $"Error: {e.Message}";
+        }
+    }
+}

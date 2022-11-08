@@ -1,0 +1,34 @@
+﻿
+@using ForumHttpClient.Services
+@namespace Login
+@inject NavigationManager navMgr
+@inject IAuthService authService
+
+<AuthorizeView>
+    <Authorized>
+        <img class="icon" src="img/Logout.png" @onclick="Logout"/>
+    </Authorized>
+    <NotAuthorized>
+        <button type="button" class=" btn btn-primary" @onclick="GoToSigneUp">Sign up</button>
+        <img class="icon" src="img/Login.png" @onclick="Login"/>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private void Login()
+    {
+        navMgr.NavigateTo("/Login");
+    }
+
+    private async Task Logout()
+    {
+        await authService.LogoutAsync();
+        navMgr.NavigateTo("/");
+    }
+    private void GoToSigneUp()
+    {
+        navMgr.NavigateTo("SignUp");
+    }
+
+}

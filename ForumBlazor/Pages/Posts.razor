@@ -1,0 +1,153 @@
+@page "/Posts"
+@using Domain.Models
+@using ForumHttpClient.ClientInterfaces
+@using Microsoft.VisualBasic
+@inject IPostService postService;
+@using UIComponents
+@using Domain.DTOs
+@using System.Security.Claims
+@inject NavigationManager nav;
+@attribute [Authorize]
+<AuthorizeView>
+ <Authorized>
+        <div class="container">
+            <div class="row" style="height: 50px; width: 100%;">
+                <div class="col"><h2 style="color: #0c63e4;">My Posts</h2></div>
+                <div class="col-md-auto"></div>
+                <div class="col col-sm-2"><button class="oi oi-plus btn btn-secondary" @onclick="() => { showModal = true;}">Add new post</button></div>
+                
+                
+            </div>
+            <div class="row">
+                @if (posts == null)
+                {
+                    <h5>Loging ...</h5>
+                }
+                else
+                {
+                    foreach (var post in posts)
+                    {
+                        <div class="col">
+                            <div class="card" style="width: 18rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title">@post.Title</h5>
+                                    <p class="card-text">@post.Content</p>
+                                    <button @onclick="()=>NavToPost(post.Id)" class="btn btn-primary">Open to Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        
+        </div>
+        <Modal ShowModal="showModal">
+            <div class="container">
+                <div class="row mp-4">
+                    <div class="col">
+                        <input type="text" placeholder="Title" @bind="title"/>
+                    </div>
+                </div>
+                  <div class="row mp-4">
+                            <div class="col">
+                                <textarea type="text" placeholder="Content" @bind="content"></textarea>
+                            </div>
+                        </div>
+                 <div class="row mb-4">
+                     <div class="col mp-4">
+                         <button class="btn btn-secondary" @onclick="CleanInputs">Cancel</button>
+                     </div>
+                     <div class="col mp-4">
+                          <button type="submit" class="btn btn-primary" @onclick="CreateNewPost">Save</button>
+                     </div>
+                 </div>
+              <div class="row">
+                    <h5 style="color: red"> @error</h5>
+                  </div>       
+            </div>
+        </Modal>
+    </Authorized>
+    <NotAuthorized>
+        <h2>You need to login to see your Posts...</h2>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+@code {
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; } = null;
+    IEnumerable<Post> posts;
+    bool showModal = false;
+    string msg = "";
+    string title = "";
+    string content = "";
+    int userId;
+    string error = "";
+    bool isLoggedIn;
+
+    private async void CleanInputs()
+    {
+        showModal = false;
+        msg = "";
+        title = "";
+        content = "";
+        error = "";
+        posts = await postService.GetByUserIdAsync(userId);
+        StateHasChanged();
+        
+    }
+    private async void CreateNewPost()
+    {
+        try
+        {
+            error = "";
+            if (!String.IsNullOrEmpty(title) || !String.IsNullOrEmpty(content))
+            {
+                PostCreationDTO dto = new PostCreationDTO(userId, title, content);
+                await postService.CreateAsync(dto);
+                showModal = false;
+                CleanInputs();
+
+            }
+            else
+            {
+                error = "All fields need to be fill";
+            }
+            
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            error = e.Message;
+        }
+    }
+    
+    protected  override async Task OnInitializedAsync()
+    {
+        msg = "";
+        try
+        {
+            AuthenticationState authState = await AuthState;
+            ClaimsPrincipal user = authState.User;
+            isLoggedIn = user.Identity != null;
+            userId = Int32.Parse(user.Claims.First(claim => claim.Type.Equals("UserId")).Value);
+            posts = await postService.GetByUserIdAsync(userId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("here: "+ e.Message);
+            msg = e.Message;
+        }
+    }
+
+    private void NavToPost(int id)
+    {
+        nav.NavigateTo($"PostDetails/{id}");
+    }
+
+  
+
+}

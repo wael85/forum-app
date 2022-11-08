@@ -1,8 +1,13 @@
+using System.Text;
 using Application.DaoIInterfaces;
 using Application.ILogic_interfaces;
 using Application.Logic;
+using Domain.Auth;
 using FileData;
 using FileData.DAOs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using WebApplication1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +19,32 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<FileContext>();
 builder.Services.AddScoped<IUserDao, UserDao>();
+builder.Services.AddScoped<IPostDAO, PostDAO>();
 builder.Services.AddScoped<IUsersLogic, UserLogic>();
+builder.Services.AddScoped<IPostLogic,PostLogic>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+    
+});
+AuthorizationPolicies.AddPolicies(builder.Services);
 
 var app = builder.Build();
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(origin => true) // allow any origin
+    .AllowCredentials());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -26,6 +54,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 
 app.UseAuthorization();
 

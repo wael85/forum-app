@@ -9,16 +9,22 @@ namespace Application.Logic;
 public class UserLogic:IUsersLogic
 { 
     
-    private IUserDao _userDao;
+    private readonly IUserDao _userDao;
+
+    public UserLogic(IUserDao userDao)
+    {
+        _userDao = userDao;
+    }
+
     public async Task<User> CreateAsync(CreateUserDto createUserDto)
     {
         User? exist =await _userDao.GetUserByUsernameAsync(createUserDto.UserName);
-        if (exist == null)
+        if (exist != null)
         {
             throw new Exception("User is exist");
         }
 
-        ValedateUserDTO(createUserDto);
+        //ValedateUserDTO(createUserDto);
         User newUser = await _userDao.CreateAsync(createUserDto);
 
         return newUser;

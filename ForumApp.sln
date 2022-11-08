@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileData", "FileData\FileDa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "WebAPI\WebAPI.csproj", "{649AAC36-817F-4441-BDE7-598988F10363}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForumHttpClient", "ForumHttpClient\ForumHttpClient.csproj", "{31D74B43-8449-489C-A567-D1E467873AA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForumBlazor", "ForumBlazor\ForumBlazor.csproj", "{84995F0E-535A-4C0D-8D24-F85962B2B37B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,13 @@ Global
 		{649AAC36-817F-4441-BDE7-598988F10363}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{649AAC36-817F-4441-BDE7-598988F10363}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{649AAC36-817F-4441-BDE7-598988F10363}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31D74B43-8449-489C-A567-D1E467873AA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31D74B43-8449-489C-A567-D1E467873AA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31D74B43-8449-489C-A567-D1E467873AA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31D74B43-8449-489C-A567-D1E467873AA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84995F0E-535A-4C0D-8D24-F85962B2B37B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84995F0E-535A-4C0D-8D24-F85962B2B37B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84995F0E-535A-4C0D-8D24-F85962B2B37B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84995F0E-535A-4C0D-8D24-F85962B2B37B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
